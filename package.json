@@ -1,7 +1,7 @@
 {
-  "name": "quick-rec",
+  "name": "quickrec",
   "version": "1.0.0",
-  "description": "An Electron screen recorder application",
+  "description": "A quick audio recorder for macOS",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -11,14 +11,11 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "keywords": [
-    "electron",
-    "screen-recorder"
-  ],
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^28.0.0",
+    "electron": "^28.1.0",
     "electron-store": "^8.1.0"
   },
   "devDependencies": {
@@ -28,7 +25,12 @@
     "eslint-plugin-import": "^2.31.0"
   },
   "build": {
+    "appId": "com.quickrec.app",
+    "productName": "QuickRec",
     "mac": {
+      "category": "public.app-category.utilities",
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.icns",
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
@@ -36,9 +38,18 @@
         "NSMicrophoneUsageDescription": "需要麦克风权限来录制音频",
         "NSScreenCaptureUsageDescription": "需要屏幕录制权限来进行录屏"
       },
-      "identity": null,
-      "category": "public.app-category.utilities"
+      "identity": null
     },
-    "appId": "com.yourcompany.quickrec"
-  }
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "assets/*",
+      "!dist/*",
+      "!build/*",
+      "!**/*.map"
+    ]
+  },
+  "os": ["darwin"]
 }
