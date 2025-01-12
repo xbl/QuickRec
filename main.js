@@ -73,15 +73,7 @@ function updateTrayMenu(recording) {
         { type: 'separator' },
         {
             label: '退出',
-            click: () => {
-                if (mainWindow) {
-                    mainWindow.destroy();
-                }
-                app.quit();
-                if (process.platform !== 'darwin') {
-                    app.exit(0);
-                }
-            },
+            click: () => quitApp(),
         },
     ]);
     tray.setContextMenu(contextMenu);
@@ -120,15 +112,7 @@ function createTray() {
         { type: 'separator' },
         {
             label: '退出',
-            click: () => {
-                if (mainWindow) {
-                    mainWindow.destroy();
-                }
-                app.quit();
-                if (process.platform !== 'darwin') {
-                    app.exit(0);
-                }
-            },
+            click: () => quitApp(),
         },
     ]);
 
@@ -331,6 +315,17 @@ ipcMain.handle('save-recording', async (event, blob) => {
         return { success: false, error: error.message };
     }
 });
+
+// 退出应用程序
+function quitApp() {
+    if (mainWindow) {
+        mainWindow.destroy();
+    }
+    app.quit();
+    if (process.platform !== 'darwin') {
+        app.exit(0);
+    }
+}
 
 if (process.platform === 'darwin') {
     // app.dock.hide()  // 在 macOS 中隐藏 dock 图标
