@@ -39,6 +39,7 @@ async function stopRecording() {
         if (mainWindow?.webContents && !mainWindow.webContents.isCrashed()) {
             mainWindow.webContents.send('stop-recording');
             console.log('主进程: 已发送停止录制信号');
+            // eslint-disable-next-line no-use-before-define
             updateTrayMenu(false);
         } else {
             throw new Error('渲染进程未就绪');
@@ -72,7 +73,15 @@ function updateTrayMenu(recording) {
         { type: 'separator' },
         {
             label: '退出',
-            click: () => app.quit(),
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.destroy();
+                }
+                app.quit();
+                if (process.platform !== 'darwin') {
+                    app.exit(0);
+                }
+            },
         },
     ]);
     tray.setContextMenu(contextMenu);
@@ -112,8 +121,13 @@ function createTray() {
         {
             label: '退出',
             click: () => {
-                console.log('退出');
+                if (mainWindow) {
+                    mainWindow.destroy();
+                }
                 app.quit();
+                if (process.platform !== 'darwin') {
+                    app.exit(0);
+                }
             },
         },
     ]);
