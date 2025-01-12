@@ -29,4 +29,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.on('stop-recording', subscription);
         return () => ipcRenderer.removeListener('stop-recording', subscription);
     },
+    // 暴露 ipcRenderer 的方法
+    ipcRenderer: {
+        on: (channel, callback) => ipcRenderer.on(channel, callback),
+        send: (channel, ...args) => ipcRenderer.send(channel, ...args),
+        removeListener: (channel, callback) => ipcRenderer.removeListener(channel, callback),
+    },
 });
