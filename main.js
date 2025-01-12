@@ -16,12 +16,35 @@ let mainWindow = null;
 async function startRecording() {
     try {
         console.log('主进程: 开始录制');
+        
+        // 确保窗口存在并已加载完成
+        if (!mainWindow || mainWindow.isDestroyed()) {
+            createWindow();
+            // 等待窗口加载完成
+            await new Promise((resolve) => {
+                mainWindow.webContents.once('did-finish-load', resolve);
+            });
+        }
+
+        // 确保渲染进程已准备就绪
+        if (mainWindow.webContents.isLoading()) {
+            await new Promise((resolve) => {
+                mainWindow.webContents.once('did-finish-load', resolve);
+            });
+        }
+
         // 发送开始录制信号
-        mainWindow?.webContents.send('start-recording');
-        console.log('主进程: 已发送开始录制信号');
+        if (!mainWindow.webContents.isCrashed()) {
+            mainWindow.webContents.send('start-recording');
+            console.log('主进程: 已发送开始录制信号');
+            updateTrayMenu(true);
+        } else {
+            throw new Error('渲染进程已崩溃');
+        }
     } catch (error) {
         console.error('主进程: 启动录制失败:', error);
-        dialog.showErrorBox('错误', '启动录制失败');
+        dialog.showErrorBox('错误', `启动录制失败: ${error.message}`);
+        updateTrayMenu(false);
     }
 }
 
@@ -135,7 +158,7 @@ function createWindow() {
         resizable: false,
         minimizable: false,
         maximizable: false,
-        closable: false, // 禁止关闭按钮
+        closable: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -143,15 +166,39 @@ function createWindow() {
             sandbox: false,
             backgroundThrottling: false,
             preload: path.join(__dirname, 'preload.js'),
+            webSecurity: true,
         },
     });
 
+    // 加载页面
     mainWindow.loadFile('index.html');
+
+    // 监听窗口加载完成
+    mainWindow.webContents.once('did-finish-load', () => {
+        console.log('主进程: 窗口加载完成');
+    });
+
+    // 监听渲染进程崩溃
+    mainWindow.webContents.on('crashed', () => {
+        console.log('主进程: 渲染进程崩溃');
+        dialog.showErrorBox('错误', '渲染进程崩溃，请重试');
+        updateTrayMenu(false);
+    });
 
     // 监听渲染进程未响应
     mainWindow.on('unresponsive', () => {
-        console.log('渲染进程无响应，重新加载');
-        mainWindow.reload();
+        console.log('主进程: 渲染进程无响应');
+        dialog.showMessageBox(mainWindow, {
+            type: 'warning',
+            title: '应用无响应',
+            message: '应用暂时无响应，是否重新加载？',
+            buttons: ['重新加载', '等待'],
+            defaultId: 0,
+        }).then(({ response }) => {
+            if (response === 0) {
+                mainWindow.reload();
+            }
+        });
     });
 }
 

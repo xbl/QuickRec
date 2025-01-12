@@ -2,20 +2,28 @@ const { ipcRenderer } = window.electronAPI;
 
 let mediaRecorder;
 let recordedChunks = [];
+let isInitialized = false;
 
 async function handlePauseRecording() {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.pause();
+        console.log('录制已暂停');
     }
 }
 
 async function handleStopRecording() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
+        console.log('录制已停止');
     }
 }
 
 async function setupRecording() {
+    if (isInitialized) {
+        console.log('录制已初始化，跳过重复初始化');
+        return true;
+    }
+
     try {
         console.log('开始设置录音...');
         // 获取系统音频源
@@ -26,11 +34,11 @@ async function setupRecording() {
 
         // 详细打印每个音频源的信息
         sources.forEach((source, index) => {
-            console.log(`音频源 ${index}:`, `{
-                id: ${source.id},
-                name: ${source.name},
-                type: ${source.type}
-            }`);
+            console.log(`音频源 ${index}:`, {
+                id: source.id,
+                name: source.name,
+                type: source.type
+            });
         });
 
         // 查找系统音频源
@@ -95,6 +103,7 @@ async function setupRecording() {
 
                 console.log('清理录音数据');
                 recordedChunks = [];
+                isInitialized = false; // 重置初始化状态
             } catch (error) {
                 console.error('处理录音数据时出错:', error);
             }
@@ -103,10 +112,12 @@ async function setupRecording() {
         // 设置数据收集间隔
         mediaRecorder.start(1000); // 每秒收集一次数据
         console.log('MediaRecorder 开始收集数据');
+        isInitialized = true;
 
         return true;
     } catch (e) {
         console.error('设置录音时出错:', e);
+        isInitialized = false;
         return false;
     }
 }
@@ -145,6 +156,3 @@ ipcRenderer.on('stop-recording', async () => {
         console.error('停止录制时出错:', error);
     }
 });
-
-// 初始化设置
-setupRecording();
