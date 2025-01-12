@@ -167,6 +167,13 @@ function createWindow() {
             backgroundThrottling: false,
             preload: path.join(__dirname, 'preload.js'),
             webSecurity: true,
+            // 添加对 ES 模块的支持
+            webviewTag: false,
+            nodeIntegrationInWorker: false,
+            nodeIntegrationInSubFrames: false,
+            // 支持 ES 模块
+            nativeWindowOpen: true,
+            worldSafeExecuteJavaScript: true,
         },
     });
 
