@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSScreenCaptureUsageDescription</key>
+  <string>需要屏幕录制权限来进行录屏</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>需要麦克风权限来录制音频</string>
+  <key>NSCameraUsageDescription</key>
+  <string>需要使用摄像头来录制视频</string>
+</dict>
+</plist> 

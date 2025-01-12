@@ -1,0 +1,44 @@
+{
+  "name": "quick-rec",
+  "version": "1.0.0",
+  "description": "An Electron screen recorder application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "codesign --force --deep --sign - node_modules/electron/dist/Electron.app && ELECTRON_ENABLE_LOGGING=true electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "electron",
+    "screen-recorder"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^28.0.0",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0"
+  },
+  "build": {
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "需要麦克风权限来录制音频",
+        "NSScreenCaptureUsageDescription": "需要屏幕录制权限来进行录屏"
+      },
+      "identity": null,
+      "category": "public.app-category.utilities"
+    },
+    "appId": "com.yourcompany.quickrec"
+  }
+}
