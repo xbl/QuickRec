@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Quick Recorder</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <div id="container">
@@ -9,4 +20,4 @@
     </div>
     <script src="renderer.js"></script>
 </body>
-</html> 
+</html>
