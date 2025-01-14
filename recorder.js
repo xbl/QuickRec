@@ -14,38 +14,10 @@ async function initializeRecording() {
 
     try {
         console.log('开始设置录音...');
-        // 获取系统音频源
-        const sources = await window.electronAPI.getSources({
-            types: ['screen', 'window', 'audio'],
-            thumbnailSize: { width: 0, height: 0 },
-        });
+        // 获取音频源
+        const audioSource = await getAudioSource();
 
-        // 详细打印每个音频源的信息
-        sources.forEach((source, index) => {
-            console.log(`音频源 ${index}:`, {
-                id: source.id,
-                name: source.name,
-                type: source.type
-            });
-        });
-
-        // 查找系统音频源
-        const audioSource = sources.find((source) => source.id.startsWith('audio:')
-            || source.id.startsWith('screen:')
-            || source.name.toLowerCase().includes('system audio')
-            || source.name.toLowerCase().includes('系统音频'));
-
-        if (!audioSource) {
-            console.error('可用的音频源:', sources.map((s) => ({ id: s.id, name: s.name })));
-            throw new Error('找不到系统音频源');
-        }
-
-        console.log('使用音频源:', {
-            id: audioSource.id,
-            name: audioSource.name,
-            type: audioSource.type,
-        });
-
+        // 创建音频流
         const stream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 mandatory: {
@@ -186,6 +158,47 @@ function stopRecording() {
  */
 function getRecordingState() {
     return mediaRecorder ? mediaRecorder.state : 'inactive';
+}
+
+/**
+ * 获取系统音频源
+ * @returns {Promise<MediaDeviceInfo>} 音频源信息
+ * @throws {Error} 如果找不到可用的音频源
+ */
+async function getAudioSource() {
+    console.log('开始获取系统音频源...');
+    const sources = await window.electronAPI.getSources({
+        types: ['screen', 'window', 'audio'],
+        thumbnailSize: { width: 0, height: 0 },
+    });
+
+    // 详细打印每个音频源的信息
+    sources.forEach((source, index) => {
+        console.log(`音频源 ${index}:`, {
+            id: source.id,
+            name: source.name,
+            type: source.type,
+        });
+    });
+
+    // 查找系统音频源
+    const audioSource = sources.find((source) => source.id.startsWith('audio:')
+        || source.id.startsWith('screen:')
+        || source.name.toLowerCase().includes('system audio')
+        || source.name.toLowerCase().includes('系统音频'));
+
+    if (!audioSource) {
+        console.error('可用的音频源:', sources.map((s) => ({ id: s.id, name: s.name })));
+        throw new Error('找不到系统音频源');
+    }
+
+    console.log('找到音频源:', {
+        id: audioSource.id,
+        name: audioSource.name,
+        type: audioSource.type,
+    });
+
+    return audioSource;
 }
 
 export {
