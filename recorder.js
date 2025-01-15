@@ -16,21 +16,21 @@ async function initializeRecording() {
         console.log('开始设置录音...');
         // 获取音频源
         const audioSource = await getAudioSource();
-
+        
         // 创建音频流
         const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
+            audio: false,
+            video: {
                 mandatory: {
                     chromeMediaSource: 'desktop',
                     chromeMediaSourceId: audioSource.id,
                 },
             },
-            video: false,
         });
 
         console.log('音频流创建成功');
         mediaRecorder = new MediaRecorder(stream, {
-            mimeType: 'audio/webm;codecs=opus',
+            mimeType: 'video/webm; codecs=vp8,opus',
         });
         console.log('MediaRecorder 创建成功');
 
@@ -169,7 +169,6 @@ async function getAudioSource() {
     console.log('开始获取系统音频源...');
     const sources = await window.electronAPI.getSources({
         types: ['screen', 'window', 'audio'],
-        thumbnailSize: { width: 0, height: 0 },
     });
 
     // 详细打印每个音频源的信息
