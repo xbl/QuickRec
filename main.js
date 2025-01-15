@@ -7,7 +7,7 @@ const path = require('path');
 const Store = require('electron-store');
 
 const store = new Store();
-const __DEBUG__ = process.env.ELECTRON_ENABLE_LOGGING
+const isDebugMode = process.env.ELECTRON_ENABLE_LOGGING;
 
 let tray = null;
 let isRecording = false;
@@ -147,16 +147,16 @@ function createTray() {
 function createWindow() {
     // 创建浏览器窗口
     mainWindow = new BrowserWindow({
-        width: 400,
-        height: 200,
-        show: __DEBUG__,
+        width: 800,
+        height: 600,
+        show: isDebugMode,
         skipTaskbar: true,
         frame: true,
         transparent: true,
         alwaysOnTop: false,
         hasShadow: false,
         center: true,
-        resizable: __DEBUG__,
+        resizable: isDebugMode,
         minimizable: false,
         maximizable: false,
         closable: false,
@@ -182,7 +182,7 @@ function createWindow() {
     mainWindow.loadFile('index.html');
 
     // 在开发模式下自动打开开发者工具
-    if (__DEBUG__) {
+    if (isDebugMode) {
         mainWindow.webContents.openDevTools();
     }
 
